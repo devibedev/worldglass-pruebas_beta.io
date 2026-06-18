@@ -289,6 +289,7 @@
             animation: fadeSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
+            flex-wrap: wrap;
         }
 
         .success-notice.show {
@@ -304,6 +305,7 @@
             font-weight: 500;
             font-size: 0.95rem;
             color: var(--text-main);
+            flex: 1;
         }
 
         .success-notice .text span {
@@ -312,6 +314,34 @@
             font-size: 0.85rem;
             color: var(--text-muted);
             margin-top: 2px;
+        }
+
+        .btn-success-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.4rem;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 60px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25);
+            white-space: nowrap;
+        }
+
+        .btn-success-link:hover {
+            background: #005bb5;
+            transform: scale(1.02);
+            box-shadow: 0 6px 16px rgba(0, 113, 227, 0.35);
+        }
+
+        .btn-success-link:active {
+            transform: scale(0.97);
         }
 
         @keyframes fadeSlideIn {
@@ -443,6 +473,18 @@
             color: #86868b;
             text-align: center;
         }
+
+        @media (max-width: 600px) {
+            .success-notice {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            .btn-success-link {
+                justify-content: center;
+                white-space: normal;
+            }
+        }
     </style>
 </head>
 <body>
@@ -534,6 +576,9 @@
                     ¡Checklist completado y PDF descargado!
                     <span>Tu constancia de validación se ha generado correctamente.</span>
                 </div>
+                <a href="https://ai.studio/apps/a347f556-3e57-4512-8c1b-edf937bee833" target="_blank" class="btn-success-link">
+                    🚀 Ir a la aplicación de cotización
+                </a>
             </div>
         </div>
 
@@ -593,9 +638,7 @@
                 ];
 
                 let checklistHtml = '';
-                items.forEach((text, index) => {
-                    // Añadimos un pequeño <small> con el subtítulo (opcional, pero lo ponemos para que sea igual a la interfaz)
-                    // En el PDF, para simplificar, dejamos solo el texto principal.
+                items.forEach((text) => {
                     checklistHtml += `
                         <div class="pdf-check-item">
                             <span class="pdf-check">✓</span>
@@ -754,5 +797,4 @@
     </script>
 
 </body>
-</html>
 </html>
