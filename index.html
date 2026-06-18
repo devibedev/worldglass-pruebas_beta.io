@@ -3,112 +3,756 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aluminio Plascencia | Sistemas de Alta Gama</title>
-    <meta name="description" content="Arquitectura en Cristal y Aluminio. Sofisticación Estructural. Cotizador visual interactivo.">
-    
+    <title>Checklist de Validación · Beta</title>
+    <!-- Librería para generar PDFs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Fuente Inter (solo para la interfaz, no para el PDF) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- ESTILOS DE LA INTERFAZ (igual que antes, con glassmorphism) --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #fbfbfd;
+            --text-main: #1d1d1f;
+            --text-muted: #86868b;
+            --accent: #0071e3;
+            --accent-dark: #1d1d1f;
+            --glass-bg: rgba(255, 255, 255, 0.72);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+            --radius-card: 20px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem;
+            background: radial-gradient(circle at 30% 20%, rgba(245, 245, 247, 0.6) 0%, #fbfbfd 80%);
+        }
+
+        .main-card {
+            max-width: 780px;
+            width: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-card);
+            box-shadow: var(--card-shadow);
+            padding: 2.5rem 2.8rem;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @media (max-width: 600px) {
+            .main-card {
+                padding: 1.8rem 1.2rem;
+            }
+        }
+
+        .header-badge {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.04);
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            margin-bottom: 1.2rem;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            line-height: 1.6;
+            padding: 1rem 1.2rem;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 14px;
+            margin-bottom: 2rem;
+            border-left: 3px solid var(--accent);
+        }
+
+        .subtitle strong {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+            margin: 1.8rem 0;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            margin-bottom: 1.8rem;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            font-size: 0.8rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            transition: border 0.25s ease, box-shadow 0.25s ease;
+            color: var(--text-main);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.08);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-group input::placeholder {
+            color: #b0b0b2;
+            font-weight: 300;
+        }
+
+        .checklist-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-main);
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checklist-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 1.2rem;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border-radius: 14px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+
+        .check-item:hover {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+
+        .check-item.checked {
+            background: rgba(0, 113, 227, 0.04);
+            border-color: var(--accent);
+        }
+
+        .check-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            margin-top: 1px;
+            accent-color: var(--accent);
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        .check-item .label-text {
+            font-size: 0.92rem;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        .check-item .label-text small {
+            display: block;
+            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            margin-top: 2px;
+        }
+
+        .pdf-date {
+            text-align: right;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+            padding-top: 1.2rem;
+            margin-top: 0.4rem;
+        }
+
+        .cta-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.2rem;
+            margin-top: 0.8rem;
+        }
+
+        .btn-download {
+            width: 100%;
+            padding: 1.1rem 2rem;
+            background: var(--accent-dark);
+            color: #fff;
+            border: none;
+            border-radius: 60px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.01em;
+            cursor: pointer;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        .btn-download:hover {
+            background: #000;
+            transform: scale(1.01);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.10);
+        }
+
+        .btn-download:active {
+            transform: scale(0.98);
+        }
+
+        .btn-download:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .success-notice {
+            display: none;
+            width: 100%;
+            padding: 1.2rem 1.6rem;
+            background: rgba(52, 199, 89, 0.08);
+            border: 1px solid rgba(52, 199, 89, 0.2);
+            border-radius: 16px;
+            align-items: center;
+            gap: 1rem;
+            animation: fadeSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        .success-notice.show {
+            display: flex;
+        }
+
+        .success-notice .icon {
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        .success-notice .text {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .success-notice .text span {
+            display: block;
+            font-weight: 400;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        @keyframes fadeSlideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 1.8rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 0.02em;
+        }
+
+        /* --- CONTENEDOR OCULTO PARA GENERAR EL PDF (SIN GLASSMORPHISM) --- */
+        #pdf-export-content {
+            display: none;
+            /* Se oculta por defecto */;
+        }
+
+        /* --- ESTILOS PARA EL PDF (se aplican cuando se genera) --- */
+        .pdf-export-body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 30px 35px;
+            background: #ffffff;
+            color: #1d1d1f;
+            line-height: 1.5;
+        }
+
+        .pdf-export-body .pdf-header {
+            border-bottom: 2px solid #1d1d1f;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .pdf-export-body .pdf-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0 0 4px 0;
+        }
+
+        .pdf-export-body .pdf-header p {
+            font-size: 0.85rem;
+            color: #86868b;
+            margin: 0;
+        }
+
+        .pdf-export-body .pdf-user {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            background: #f8f9fa;
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+
+        .pdf-export-body .pdf-user strong {
+            font-weight: 600;
+        }
+
+        .pdf-export-body .pdf-checklist {
+            margin: 20px 0 18px;
+        }
+
+        .pdf-export-body .pdf-checklist .pdf-check-item {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.92rem;
+        }
+
+        .pdf-export-body .pdf-checklist .pdf-check-item .pdf-check {
+            font-size: 1.1rem;
+            color: #2e7d32;
+            min-width: 24px;
+        }
+
+        .pdf-export-body .pdf-checklist .pdf-check-item .pdf-label {
+            flex: 1;
+        }
+
+        .pdf-export-body .pdf-checklist .pdf-check-item .pdf-label small {
+            display: block;
+            font-size: 0.8rem;
+            color: #86868b;
+            font-weight: 400;
+        }
+
+        .pdf-export-body .pdf-date {
+            text-align: right;
+            font-size: 0.8rem;
+            color: #86868b;
+            border-top: 1px solid #e5e5e5;
+            padding-top: 12px;
+            margin-top: 8px;
+        }
+
+        .pdf-export-body .pdf-disclaimer {
+            background: #f8f9fa;
+            padding: 14px 18px;
+            border-left: 4px solid #c62828;
+            margin: 18px 0 10px;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            color: #1d1d1f;
+        }
+
+        .pdf-export-body .pdf-disclaimer strong {
+            color: #c62828;
+        }
+
+        .pdf-export-body .pdf-footer {
+            margin-top: 20px;
+            border-top: 1px solid #e5e5e5;
+            padding-top: 12px;
+            font-size: 0.7rem;
+            color: #86868b;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- ENCABEZADO -->
-    <header id="main-header">
-        <div class="nav-container">
-            <a href="#" class="logo">Plascencia <span>Aluminio</span></a>
-            <nav>
-                <a href="#sistemas">Sistemas</a>
-                <a href="#cotizador">Cotizador</a>
-                <a href="#contacto">Contacto</a>
-            </nav>
+    <div class="main-card" id="app">
+
+        <div class="header-badge">🧪 Versión en pruebas · Beta</div>
+
+        <h1>
+            <span>📋</span> Checklist de Validación
+        </h1>
+
+        <div class="subtitle">
+            <strong>⚠️ Importante:</strong> Esta herramienta está en desarrollo. Al completar este checklist,
+            reconoces que los cálculos son <strong>orientativos</strong> y no vinculantes.
+            Tu feedback es clave para ajustar el sistema.
         </div>
-    </header>
 
-    <!-- HERO PRINCIPAL -->
-    <section class="hero">
-        <div class="hero-bg" id="heroBg"></div>
-        <div class="hero-content">
-            <p>Arquitectura en Cristal y Aluminio</p>
-            <h1>Sofisticación Estructural</h1>
-            <a href="#cotizador" class="btn-premium reveal">Configurar Espacio</a>
+        <!-- FILA DE DATOS DEL USUARIO -->
+        <div class="form-row">
+            <div class="form-group">
+                <label for="fullname">👤 Responsable</label>
+                <input type="text" id="fullname" placeholder="Ej: Juan Pérez" required>
+            </div>
+            <div class="form-group">
+                <label for="workshop">🏗️ Taller / Empresa</label>
+                <input type="text" id="workshop" placeholder="Ej: Talleres del Norte" required>
+            </div>
         </div>
-    </section>
 
-    <!-- SELECTOR DE CATEGORÍAS -->
-    <main class="catalog-container" id="sistemas">
-        <div class="section-indicator">Colecciones de Sistemas</div>
-        
-        <div class="grid-categories" id="categories-grid">
-            <!-- Generadas dinámicamente por JS -->
+        <!-- CHECKLIST (interfaz) -->
+        <div class="checklist-title">✅ Marca cada punto para validar tu entendimiento:</div>
+        <div class="checklist-items" id="checklist-group">
+
+            <label class="check-item" id="item-1">
+                <input type="checkbox" class="check-input">
+                <span class="label-text">
+                    Reconozco que esta herramienta se encuentra en <strong>fase de desarrollo (Beta)</strong>.
+                    <small>Los algoritmos están siendo ajustados con datos reales.</small>
+                </span>
+            </label>
+
+            <label class="check-item" id="item-2">
+                <input type="checkbox" class="check-input">
+                <span class="label-text">
+                    Entiendo que los cálculos son <strong>orientativos</strong> y no constituyen una cotización vinculante.
+                    <small>La compra de materiales debe basarse en verificación física.</small>
+                </span>
+            </label>
+
+            <label class="check-item" id="item-3">
+                <input type="checkbox" class="check-input">
+                <span class="label-text">
+                    Me comprometo a <strong>verificar las cantidades</strong> con mi criterio profesional antes de ejecutar cualquier obra.
+                    <small>El criterio del taller prevalece sobre el cálculo automático.</small>
+                </span>
+            </label>
+
+            <label class="check-item" id="item-4">
+                <input type="checkbox" class="check-input">
+                <span class="label-text">
+                    Acepto <strong>notificar a los desarrolladores</strong> sobre cualquier desviación o error encontrado.
+                    <small>Tu retroalimentación es esencial para mejorar la precisión.</small>
+                </span>
+            </label>
+
+            <label class="check-item" id="item-5">
+                <input type="checkbox" class="check-input">
+                <span class="label-text">
+                    <strong>Autorizo</strong> el uso de estos datos de prueba para depurar y ajustar el sistema.
+                    <small>Los datos se tratarán de forma anónima y confidencial.</small>
+                </span>
+            </label>
         </div>
-    </main>
 
-    <!-- COTIZADOR INTERACTIVO -->
-    <section id="cotizador" class="cotizador-section">
-        <div class="cotizador-container">            <div class="section-indicator">Cotiza en Segundos</div>
-            
-            <div class="cotizador-grid">
-                <!-- Panel de Controles -->
-                <div class="panel-controls">
-                    <div class="selector-grid" id="type-selector">
-                        <div class="btn-select active" data-type="corredizo">Corredizo</div>
-                        <div class="btn-select" data-type="abatible">Abatible</div>
-                        <div class="btn-select" data-type="fijo">Fijo</div>
-                        <div class="btn-select" data-type="plegable">Plegable</div>
-                        <div class="btn-select" data-type="domo">Domo</div>
-                        <div class="btn-select" data-type="templado">Cristal Templado</div>
-                        <div class="btn-select" data-type="acoples">Acoples</div>
-                        <div class="btn-select" data-type="especiales">Especiales</div>
-                    </div>
+        <div class="pdf-date">
+            📅 Fecha de validación: <span id="current-date-display"></span>
+        </div>
 
-                    <div id="standard-controls">
-                        <div class="control-group">
-                            <label for="slider-width">Ancho <span id="val-width">3.00 m</span></label>
-                            <input type="range" id="slider-width" class="slider" min="1.0" max="6.0" step="0.1" value="3.0">
-                        </div>
-                        <div class="control-group">
-                            <label for="slider-height">Alto <span id="val-height">2.40 m</span></label>
-                            <input type="range" id="slider-height" class="slider" min="1.0" max="4.0" step="0.1" value="2.4">
-                        </div>
-                    </div>
+        <!-- BOTÓN CTA + AVISO DE ÉXITO -->
+        <div class="cta-container">
+            <button class="btn-download" id="downloadBtn">
+                ⬇️ Confirmar y descargar PDF
+            </button>
 
-                    <button class="btn-cotizar" onclick="solicitarCotizacion()">Obtener Cotización</button>
-                </div>
-
-                <!-- Panel Visual -->
-                <div class="panel-visual">
-                    <div class="croquis-box" id="croquis-container"></div>
-
-                    <div class="especial-card" id="special-container">
-                        <div class="especial-icon">🧠</div>
-                        <h4>Este proyecto requiere al cerebro del equipo.</h4>
-                        <p>Los sistemas especiales y acoples necesitan una evaluación personalizada por parte de nuestro equipo de ingeniería avanzada.</p>
-                        <a href="#contacto" class="btn-premium">Consultar Cotizador Inteligente</a>
-                    </div>
-
-                    <div class="data-display" id="data-panel">
-                        <div>Ancho <strong id="data-w">3.00 m</strong></div>
-                        <div>Alto <strong id="data-h">2.40 m</strong></div>
-                        <div>Área Total <strong id="data-area">7.20 m²</strong></div>
-                    </div>
+            <div class="success-notice" id="successNotice">
+                <div class="icon">✅</div>
+                <div class="text">
+                    ¡Checklist completado y PDF descargado!
+                    <span>Tu constancia de validación se ha generado correctamente.</span>
                 </div>
             </div>
         </div>
-        <!-- Banner IA -->
-        <div id="avanzado" class="ai-banner">
-            <h2>Asistente de Cotización Inteligente</h2>
-            <p>Déjale el cálculo complejo a nuestro motor algorítmico. Ideal para fachadas integrales, muros cortina y desarrollos residenciales de gran escala.</p>
-            <a href="#contacto" class="btn-ai">Iniciar Configuración Avanzada</a>
+
+        <div class="footer-note">
+            Al hacer clic en "Confirmar" aceptas las condiciones del descargo de responsabilidad.
         </div>
-    </section>
+    </div>
 
-    <!-- FOOTER -->
-    <footer id="contacto">
-        <p>&copy; 2026 Aluminio Plascencia. Todos los derechos reservados. Arquitectura & Perspectiva de Vanguardia.</p>
-    </footer>
+    <!-- CONTENEDOR OCULTO PARA GENERAR EL PDF (se llena dinámicamente) -->
+    <div id="pdf-export-content" style="display: none;"></div>
 
-    <script src="js/main.js"></script>
+    <script>
+        (function() {
+            'use strict';
+
+            const checkboxes = document.querySelectorAll('.check-input');
+            const checkItems = document.querySelectorAll('.check-item');
+            const fullnameInput = document.getElementById('fullname');
+            const workshopInput = document.getElementById('workshop');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const successNotice = document.getElementById('successNotice');
+            const dateDisplay = document.getElementById('current-date-display');
+            const exportContainer = document.getElementById('pdf-export-content');
+
+            // --- Mostrar fecha actual ---
+            const now = new Date();
+            const formattedDate = now.toLocaleDateString('es-MX', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            dateDisplay.textContent = formattedDate;
+
+            // --- Efecto visual al marcar/desmarcar ---
+            checkboxes.forEach((cb) => {
+                cb.addEventListener('change', function() {
+                    const parentItem = this.closest('.check-item');
+                    if (this.checked) {
+                        parentItem.classList.add('checked');
+                    } else {
+                        parentItem.classList.remove('checked');
+                    }
+                });
+            });
+
+            // --- Función que construye el contenido HTML para el PDF ---
+            function buildPdfContent(name, workshop, dateStr) {
+                // Lista de ítems con su texto y el check (✓) siempre visible en el PDF
+                const items = [
+                    'Reconozco que esta herramienta se encuentra en fase de desarrollo (Beta). Los algoritmos están siendo ajustados con datos reales.',
+                    'Entiendo que los cálculos son orientativos y no constituyen una cotización vinculante. La compra de materiales debe basarse en verificación física.',
+                    'Me comprometo a verificar las cantidades con mi criterio profesional antes de ejecutar cualquier obra. El criterio del taller prevalece sobre el cálculo automático.',
+                    'Acepto notificar a los desarrolladores sobre cualquier desviación o error encontrado. Tu retroalimentación es esencial para mejorar la precisión.',
+                    'Autorizo el uso de estos datos de prueba para depurar y ajustar el sistema. Los datos se tratarán de forma anónima y confidencial.'
+                ];
+
+                let checklistHtml = '';
+                items.forEach((text, index) => {
+                    // Añadimos un pequeño <small> con el subtítulo (opcional, pero lo ponemos para que sea igual a la interfaz)
+                    // En el PDF, para simplificar, dejamos solo el texto principal.
+                    checklistHtml += `
+                        <div class="pdf-check-item">
+                            <span class="pdf-check">✓</span>
+                            <span class="pdf-label">${text}</span>
+                        </div>
+                    `;
+                });
+
+                return `
+                    <div class="pdf-export-body">
+                        <div class="pdf-header">
+                            <h2>📋 Constancia de Validación</h2>
+                            <p>Documento generado en la fase de pruebas (Beta) de la aplicación de cálculo.</p>
+                        </div>
+
+                        <div class="pdf-user">
+                            <span><strong>Responsable:</strong> ${name}</span>
+                            <span><strong>Taller / Empresa:</strong> ${workshop}</span>
+                        </div>
+
+                        <div class="pdf-checklist">
+                            ${checklistHtml}
+                        </div>
+
+                        <div class="pdf-date">
+                            📅 Fecha de validación: ${dateStr}
+                        </div>
+
+                        <div class="pdf-disclaimer">
+                            <strong>🚨 DESCARGO DE RESPONSABILIDAD:</strong> Este documento es una constancia de participación en la fase de pruebas.
+                            La aplicación de cálculo se proporciona "tal cual" y su precisión está en proceso de validación.
+                            El usuario asume toda la responsabilidad por el uso de esta información.
+                            La empresa no se hace responsable por pérdidas económicas, faltantes o excedentes de material
+                            derivados del uso exclusivo de esta versión en desarrollo.
+                        </div>
+
+                        <div class="pdf-footer">
+                            Documento generado automáticamente · ${dateStr}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // --- Función principal: validar y descargar PDF ---
+            function handleDownload() {
+                // Validar checkboxes
+                let allChecked = true;
+                checkboxes.forEach(cb => {
+                    if (!cb.checked) allChecked = false;
+                });
+
+                const name = fullnameInput.value.trim();
+                const workshop = workshopInput.value.trim();
+
+                if (!allChecked) {
+                    alert('⚠️ Por favor, marca TODAS las casillas del checklist para continuar.');
+                    for (let cb of checkboxes) {
+                        if (!cb.checked) {
+                            cb.closest('.check-item').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            cb.focus();
+                            break;
+                        }
+                    }
+                    return;
+                }
+
+                if (name === '' || workshop === '') {
+                    alert('⚠️ Por favor, completa tu Nombre y el nombre del Taller/Empresa.');
+                    if (name === '') fullnameInput.focus();
+                    else workshopInput.focus();
+                    return;
+                }
+
+                // --- Todo válido: construir el contenido del PDF ---
+                const dateStr = dateDisplay.textContent;
+
+                // Generamos el HTML del PDF en el contenedor oculto
+                exportContainer.innerHTML = buildPdfContent(name, workshop, dateStr);
+                // Lo mostramos temporalmente para que html2pdf lo capture (pero permanece oculto para el usuario)
+                exportContainer.style.display = 'block';
+                // Forzamos un reflow para que el navegador renderice el contenido
+                void exportContainer.offsetHeight;
+
+                // Deshabilitar botón
+                downloadBtn.disabled = true;
+                downloadBtn.textContent = '⏳ Generando PDF...';
+
+                successNotice.classList.remove('show');
+                successNotice.style.display = 'none';
+
+                // Esperar un momento para que el contenido se renderice completamente
+                setTimeout(() => {
+                    const element = exportContainer;
+
+                    const opt = {
+                        margin: [0.5, 0.5, 0.5, 0.5],
+                        filename: `Checklist_Validacion_${name.replace(/\s+/g, '_')}.pdf`,
+                        image: { type: 'jpeg', quality: 0.98 },
+                        html2canvas: {
+                            scale: 2,
+                            letterRendering: true,
+                            useCORS: true,
+                            logging: false,
+                            // Asegurar que los estilos se apliquen
+                            onclone: function(doc) {
+                                // Asegurar que el contenido sea visible
+                                const el = doc.getElementById('pdf-export-content');
+                                if (el) el.style.display = 'block';
+                            }
+                        },
+                        jsPDF: {
+                            unit: 'in',
+                            format: 'letter',
+                            orientation: 'portrait'
+                        },
+                        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                    };
+
+                    html2pdf().set(opt).from(element).save()
+                        .then(function() {
+                            // Ocultar el contenedor de nuevo
+                            exportContainer.style.display = 'none';
+                            // Mostrar notificación de éxito
+                            successNotice.style.display = 'flex';
+                            void successNotice.offsetWidth;
+                            successNotice.classList.add('show');
+
+                            downloadBtn.disabled = false;
+                            downloadBtn.textContent = '⬇️ Confirmar y descargar PDF';
+
+                            successNotice.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        })
+                        .catch(function(error) {
+                            console.error('Error al generar PDF:', error);
+                            alert('Hubo un problema al generar el PDF. Por favor, intenta de nuevo.');
+                            exportContainer.style.display = 'none';
+                            downloadBtn.disabled = false;
+                            downloadBtn.textContent = '⬇️ Confirmar y descargar PDF';
+                        });
+                }, 300); // pequeño retraso para garantizar renderizado
+            }
+
+            // --- Eventos ---
+            downloadBtn.addEventListener('click', handleDownload);
+
+            document.querySelectorAll('input[type="text"]').forEach(input => {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        downloadBtn.click();
+                    }
+                });
+            });
+
+        })();
+    </script>
+
 </body>
+</html>
 </html>
